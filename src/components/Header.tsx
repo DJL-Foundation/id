@@ -2,8 +2,11 @@ import { Link } from '@tanstack/react-router'
 import ParaglideLocaleSwitcher from './LocaleSwitcher.tsx'
 import BetterAuthHeader from '../integrations/better-auth/header-user.tsx'
 import ThemeToggle from './ThemeToggle'
+import { authClient } from '#/lib/auth-client'
 
 export default function Header() {
+  const { data: session } = authClient.useSession()
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
       <nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
@@ -60,13 +63,15 @@ export default function Header() {
           >
             Home
           </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
-          </Link>
+          {session?.user ? (
+            <Link
+              to="/about"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              About
+            </Link>
+          ) : null}
           <a
             href="https://tanstack.com/start/latest/docs/framework/react/overview"
             className="nav-link"

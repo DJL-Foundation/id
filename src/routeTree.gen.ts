@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiUserDeleteAccountRouteImport } from './routes/api/user/delete-account'
+import { Route as ApiInternalAuthUrlsRouteImport } from './routes/api/internal/auth-urls'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const AboutRoute = AboutRouteImport.update({
@@ -23,6 +25,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUserDeleteAccountRoute = ApiUserDeleteAccountRouteImport.update({
+  id: '/api/user/delete-account',
+  path: '/api/user/delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternalAuthUrlsRoute = ApiInternalAuthUrlsRouteImport.update({
+  id: '/api/internal/auth-urls',
+  path: '/api/internal/auth-urls',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -33,30 +45,54 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/internal/auth-urls': typeof ApiInternalAuthUrlsRoute
+  '/api/user/delete-account': typeof ApiUserDeleteAccountRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/internal/auth-urls': typeof ApiInternalAuthUrlsRoute
+  '/api/user/delete-account': typeof ApiUserDeleteAccountRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/internal/auth-urls': typeof ApiInternalAuthUrlsRoute
+  '/api/user/delete-account': typeof ApiUserDeleteAccountRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/api/auth/$'
+    | '/api/internal/auth-urls'
+    | '/api/user/delete-account'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/api/auth/$'
-  id: '__root__' | '/' | '/about' | '/api/auth/$'
+  to:
+    | '/'
+    | '/about'
+    | '/api/auth/$'
+    | '/api/internal/auth-urls'
+    | '/api/user/delete-account'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/api/auth/$'
+    | '/api/internal/auth-urls'
+    | '/api/user/delete-account'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiInternalAuthUrlsRoute: typeof ApiInternalAuthUrlsRoute
+  ApiUserDeleteAccountRoute: typeof ApiUserDeleteAccountRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,6 +111,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/user/delete-account': {
+      id: '/api/user/delete-account'
+      path: '/api/user/delete-account'
+      fullPath: '/api/user/delete-account'
+      preLoaderRoute: typeof ApiUserDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/auth-urls': {
+      id: '/api/internal/auth-urls'
+      path: '/api/internal/auth-urls'
+      fullPath: '/api/internal/auth-urls'
+      preLoaderRoute: typeof ApiInternalAuthUrlsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -89,6 +139,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiInternalAuthUrlsRoute: ApiInternalAuthUrlsRoute,
+  ApiUserDeleteAccountRoute: ApiUserDeleteAccountRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
