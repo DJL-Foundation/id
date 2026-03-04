@@ -1,0 +1,8 @@
+- [ ] Install and wire Better Auth dependencies for PostgreSQL, passkeys, API keys, and email delivery
+- [ ] Extend Better Auth server config with required providers, plugins, and security defaults
+- [ ] Add auth-aware root route behavior (public signed-out state and signed-in dashboard)
+- [ ] Add user account management UI and deletion API that returns 500 "Unimplemented"
+- [ ] Add admin user management UI (list, impersonate, edit, delete) backed by Better Auth endpoints
+- [ ] Expose OpenAPI and key-protected utility endpoints
+- [ ] Add/update environment variable definitions and docs for setup
+- [ ] Run targeted checks, capture UI screenshot, then run code review and CodeQL
