@@ -25,7 +25,7 @@ export const Route = createFileRoute('/api/internal/auth-urls')({
 
         if (!verification.valid) {
           return new Response(JSON.stringify({ error: 'Invalid API key' }), {
-            status: 403,
+            status: 401,
             headers: { 'content-type': 'application/json' },
           })
         }

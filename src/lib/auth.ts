@@ -17,11 +17,16 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { sendAuthEmail } from './auth-emails'
 
 const isProduction = process.env.NODE_ENV === 'production'
+const secret = process.env.BETTER_AUTH_SECRET
+
+if (isProduction && !secret) {
+  throw new Error('BETTER_AUTH_SECRET must be set in production')
+}
 
 const database = process.env.DATABASE_URL
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: isProduction ? { rejectUnauthorized: false } : undefined,
+      ssl: isProduction ? { rejectUnauthorized: true } : undefined,
     })
   : undefined
 
@@ -76,9 +81,7 @@ if (process.env.TURNSTILE_SECRET_KEY) {
 
 export const auth = betterAuth({
   database,
-  secret:
-    process.env.BETTER_AUTH_SECRET ??
-    'development-only-secret-change-before-production',
+  secret,
   baseURL: process.env.BETTER_AUTH_URL ?? process.env.SERVER_URL,
   trustedOrigins,
   emailVerification: {

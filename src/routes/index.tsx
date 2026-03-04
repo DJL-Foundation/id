@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { authClient } from '#/lib/auth-client'
 
+interface AdminUsersResponse {
+  users?: Array<{ id: string; email: string }>
+}
+
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
@@ -15,29 +19,29 @@ function Home() {
   const [adminUsers, setAdminUsers] = useState<Array<{ id: string; email: string }>>([])
   const [selectedUserId, setSelectedUserId] = useState<string>('')
 
-  const passkeySignIn = () => (authClient.signIn as unknown as { passkey: () => Promise<{ error?: { message?: string } }> }).passkey()
-  const usernameSignIn = () =>
-    (authClient.signIn as unknown as {
+  const pluginClient = authClient as unknown as {
+    signIn: {
+      passkey: () => Promise<{ error?: { message?: string } }>
       username: (payload: { username: string; password: string }) => Promise<{ error?: { message?: string } }>
-    }).username({ username, password })
+    }
+    passkey: { addPasskey: (payload: { name: string }) => Promise<{ error?: { message?: string } }> }
+    apiKey: {
+      create: (payload: { name: string; expiresIn: number }) => Promise<{ error?: { message?: string }; data?: { key?: string } }>
+    }
+    twoFactor: { enable: (payload: { password: string }) => Promise<{ error?: { message?: string } }> }
+    organization: { create: (payload: { name: string; slug: string }) => Promise<{ error?: { message?: string } }> }
+  }
+  const passkeySignIn = () => pluginClient.signIn.passkey()
+  const usernameSignIn = () => pluginClient.signIn.username({ username, password })
   const addPasskey = () =>
-    (authClient as unknown as {
-      passkey: { addPasskey: (payload: { name: string }) => Promise<{ error?: { message?: string } }> }
-    }).passkey.addPasskey({ name: 'Primary device' })
+    pluginClient.passkey.addPasskey({ name: 'Primary device' })
   const createApiKey = () =>
-    (authClient as unknown as {
-      apiKey: {
-        create: (payload: { name: string; expiresIn: number }) => Promise<{ error?: { message?: string }; data?: { key?: string } }>
-      }
-    }).apiKey.create({ name: 'Dashboard Access', expiresIn: 14 })
+    pluginClient.apiKey.create({ name: 'Dashboard Access', expiresIn: 14 })
   const enableTwoFactor = () =>
-    (authClient as unknown as {
-      twoFactor: { enable: (payload: { password: string }) => Promise<{ error?: { message?: string } }> }
-    }).twoFactor.enable({ password })
+    pluginClient.twoFactor.enable({ password })
   const createOrganization = () =>
-    (authClient as unknown as {
-      organization: { create: (payload: { name: string; slug: string }) => Promise<{ error?: { message?: string } }> }
-    }).organization.create({ name: 'DJL Workspace', slug: `djl-${Date.now()}` })
+    pluginClient.organization.create({ name: 'DJL Workspace', slug: `djl-${Date.now()}` })
+  const fallbackName = `DJL User ${Date.now()}`
 
   if (isPending) {
     return (
@@ -103,7 +107,7 @@ function Home() {
                 .email({
                   email,
                   password,
-                  name: displayName || username || 'DJL User',
+                  name: displayName || username || fallbackName,
                   username,
                 })
                 .then((result) => {
@@ -215,8 +219,17 @@ function Home() {
             className="ml-2 rounded-full border border-red-600 px-4 py-2 text-red-600"
             onClick={() => {
               void fetch('/api/user/delete-account', { method: 'DELETE' })
-                .then((response) => response.json())
-                .then((body) => setStatus(body.error ?? 'Delete Anfrage gesendet'))
+                .then(async (response) => {
+                  const body = await response.text()
+                  if (!response.ok) {
+                    setStatus(`Löschen fehlgeschlagen (${response.status}): ${body}`)
+                    return
+                  }
+                  setStatus(body)
+                })
+                .catch(() => {
+                  setStatus('Löschen fehlgeschlagen (Netzwerkfehler).')
+                })
             }}
           >
             Account löschen
@@ -299,7 +312,8 @@ function Home() {
                 void fetch('/api/auth/admin/list-users')
                   .then((response) => response.json())
                   .then((users) => {
-                    const normalized = ((users as { users?: Array<{ id: string; email: string }> })?.users ?? []).map((user) => ({
+                    const response = users as AdminUsersResponse
+                    const normalized = (response.users ?? []).map((user) => ({
                       id: user.id,
                       email: user.email,
                     }))
