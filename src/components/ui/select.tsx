@@ -19,7 +19,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 				>
 					{children}
 				</select>
-				<ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50 pointer-events-none" />
+				<ChevronDown
+					aria-hidden="true"
+					className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50 pointer-events-none"
+				/>
 			</div>
 		);
 	},
