@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/internal/auth-urls")({
 					signOut: `${base}/api/auth/sign-out`,
 					session: `${base}/api/auth/get-session`,
 					user: `${base}/api/auth/get-session`,
-					forgotPassword: `${base}/api/auth/forget-password`,
+					requestPasswordReset: `${base}/api/auth/request-password-reset`,
 					resetPassword: `${base}/api/auth/reset-password`,
 					verifyEmail: `${base}/api/auth/verify-email`,
 					socialSignIn: `${base}/api/auth/sign-in/social`,
