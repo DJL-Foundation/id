@@ -60,7 +60,7 @@ function SignInPage() {
 				},
 			});
 
-			if (result.data?.twoFactorRedirect) {
+			if ((result.data as Record<string, unknown> | null)?.twoFactorRedirect) {
 				setShowTotp(true);
 				setLoading(false);
 				return;
